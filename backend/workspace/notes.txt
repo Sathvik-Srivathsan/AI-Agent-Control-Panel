@@ -1,0 +1,4 @@
+Team notes
+- Migration to SQLAlchemy 2.0 is complete
+- Next release: agent control panel MVP
+- Remember to keep model calls behind the OmniRoute gateway
