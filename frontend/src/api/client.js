@@ -45,3 +45,14 @@ export async function fetchRunTools(runId) {
   if (!res.ok) throw new Error("Run not found");
   return res.json();
 }
+
+export async function fetchRunMessages(runId) {
+  const res = await fetch(`${API_BASE}/runs/${runId}/messages`);
+  if (!res.ok) throw new Error("Run not found");
+  return res.json();
+}
+
+export async function fetchMetrics() {
+  const res = await fetch(`${API_BASE}/metrics`);
+  return res.json();
+}

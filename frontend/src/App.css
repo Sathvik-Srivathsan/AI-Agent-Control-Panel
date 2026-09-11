@@ -200,6 +200,134 @@ tr:hover td {
 .badge-running { background: rgba(253, 203, 110, 0.15); color: var(--yellow); }
 .badge-pending { background: rgba(139, 143, 163, 0.15); color: var(--text-dim); }
 .badge-disabled { background: rgba(139, 143, 163, 0.15); color: var(--text-dim); }
+.badge-max_turns_exceeded { background: rgba(253, 203, 110, 0.15); color: var(--yellow); }
+
+/* Execution Timeline */
+.timeline {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.tl-steps {
+  list-style: none;
+  padding: 0;
+  position: relative;
+}
+
+.tl-steps::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--border);
+}
+
+.tl-step {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 20px;
+}
+
+.tl-step:last-child {
+  padding-bottom: 0;
+}
+
+.tl-node {
+  position: relative;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  box-shadow: 0 0 0 4px var(--bg-card);
+  flex-shrink: 0;
+}
+
+.tl-start .tl-node { background: var(--accent); }
+.tl-llm .tl-node { background: var(--primary, #4a90d9); }
+.tl-tool-call .tl-node { background: var(--yellow); }
+.tl-tool-result .tl-node { background: var(--green); }
+.tl-final .tl-node { background: var(--green); }
+.tl-error .tl-node { background: var(--red); }
+
+.tl-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.tl-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.tl-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tl-meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-left: auto;
+}
+
+.tl-content pre {
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-size: 13px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tl-content details {
+  margin-top: 4px;
+}
+
+.tl-content summary {
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+/* Transcript */
+.msg-entry {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.msg-entry:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.msg-entry pre {
+  margin-top: 6px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+.msg-role-user { color: var(--accent); }
+.msg-role-assistant { color: var(--green); }
+.msg-role-tool { color: var(--yellow); }
 
 /* Agent Grid */
 .agent-grid {

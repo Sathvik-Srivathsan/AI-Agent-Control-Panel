@@ -33,6 +33,7 @@ class Run(Base):
     started_at = Column(DateTime, nullable=False, server_default=func.now())
     completed_at = Column(DateTime, nullable=True)
     duration_ms = Column(Integer, nullable=True)
+    llm_requests = Column(Integer, nullable=False, default=0)
     error = Column(Text, nullable=True)
 
     agent = relationship("Agent", back_populates="runs")

@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchHealth, fetchAgents, fetchRuns } from "../api/client";
+import { fetchHealth, fetchAgents, fetchRuns, fetchMetrics } from "../api/client";
 
 export default function Dashboard() {
   const [health, setHealth] = useState(null);
   const [agents, setAgents] = useState([]);
   const [runs, setRuns] = useState([]);
+  const [metrics, setMetrics] = useState(null);
 
   useEffect(() => {
     fetchHealth().then(setHealth).catch(() => {});
     fetchAgents().then(setAgents).catch(() => {});
     fetchRuns().then(setRuns).catch(() => {});
+    fetchMetrics().then(setMetrics).catch(() => {});
   }, []);
 
   const recentRuns = runs.slice(0, 5);
+  const m = metrics;
 
   return (
     <div className="page">
@@ -32,15 +35,27 @@ export default function Dashboard() {
         </div>
         <div className="card">
           <h3>Total Runs</h3>
-          <p className="stat">{runs.length}</p>
+          <p className="stat">{m ? m.total_runs : "-"}</p>
         </div>
         <div className="card">
           <h3>Success Rate</h3>
-          <p className="stat">
-            {runs.length > 0
-              ? `${Math.round((runs.filter((r) => r.status === "success").length / runs.length) * 100)}%`
-              : "-"}
-          </p>
+          <p className="stat">{m ? `${m.success_rate}%` : "-"}</p>
+        </div>
+        <div className="card">
+          <h3>Avg Latency</h3>
+          <p className="stat">{m && m.avg_duration_ms ? `${(m.avg_duration_ms / 1000).toFixed(1)}s` : "-"}</p>
+        </div>
+        <div className="card">
+          <h3>Tool Calls / Run</h3>
+          <p className="stat">{m ? m.avg_tool_calls_per_run : "-"}</p>
+        </div>
+        <div className="card">
+          <h3>Avg LLM Requests</h3>
+          <p className="stat">{m && m.avg_llm_requests ? m.avg_llm_requests : "-"}</p>
+        </div>
+        <div className="card">
+          <h3>Failed Runs</h3>
+          <p className="stat">{m ? m.failed_runs : "-"}</p>
         </div>
       </div>
 

@@ -57,6 +57,13 @@ def test_run_agent_with_tool_call():
     assert len(result.tool_calls) == 1
     assert result.tool_calls[0].tool_name == "list_files"
     assert result.llm_requests == 2
+    assert len(result.messages) == 4
+    assert result.messages[0].role == "system"
+    assert result.messages[1].role == "user"
+    assert result.messages[2].role == "assistant"
+    assert result.messages[2].tool_calls[0]["function"]["name"] == "list_files"
+    assert result.messages[3].role == "tool"
+    assert result.messages[3].content == "f main.py\nf utils.py"
 
 
 def test_run_agent_tool_error():

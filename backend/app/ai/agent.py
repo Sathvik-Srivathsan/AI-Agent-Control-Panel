@@ -26,6 +26,7 @@ class AgentRunResult:
     status: str
     tool_calls: list[ToolCallRecord] = field(default_factory=list)
     llm_requests: int = 0
+    messages: list[LLMMessage] = field(default_factory=list)
     error: str | None = None
 
 
@@ -49,6 +50,7 @@ def run_agent(agent: Agent, prompt: str, llm_client: LLMClient) -> AgentRunResul
                 status="error",
                 tool_calls=tool_call_records,
                 llm_requests=llm_requests,
+                messages=messages,
                 error=str(e),
             )
 
@@ -102,6 +104,7 @@ def run_agent(agent: Agent, prompt: str, llm_client: LLMClient) -> AgentRunResul
                 status="success",
                 tool_calls=tool_call_records,
                 llm_requests=llm_requests,
+                messages=messages,
             )
 
     return AgentRunResult(
@@ -109,4 +112,5 @@ def run_agent(agent: Agent, prompt: str, llm_client: LLMClient) -> AgentRunResul
         status="max_turns_exceeded",
         tool_calls=tool_call_records,
         llm_requests=llm_requests,
+        messages=messages,
     )

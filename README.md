@@ -14,20 +14,20 @@ The application uses **OmniRoute** as an OpenAI-compatible model gateway, allowi
 User
   |
   v
-Frontend
+Frontend  (React, :5173)
   |
   v
-FastAPI
+FastAPI   (:8080)
   |
   v
 Agent Controller
   |
   v
-OmniRoute
+OmniRoute (:20128)
   |
   +---- Cloud LLM
   |
-  +---- Local Ollama LLM
+  +---- Local Ollama LLM (:11434)  ->  qwen2.5:1.5b
   |
   v
 Agent response/tool calls
@@ -36,15 +36,15 @@ Agent response/tool calls
 SQLite stores:
 
 - agents
-- runs
+- runs (including LLM request count per run)
 - tool calls
-- messages
+- messages (full execution transcript)
 
 ## Technology Stack
 
 - **Backend:** Python, FastAPI, Pydantic, SQLite, SQLAlchemy
-- **Frontend:** React (planned)
-- **AI:** OpenAI-compatible API via OmniRoute
+- **Frontend:** React, Vite
+- **AI:** OpenAI-compatible API via OmniRoute → local Ollama
 
 ## Project Structure
 
@@ -81,10 +81,27 @@ project-root/
             test_runs.py
             test_run_history.py
         requirements.txt
+    frontend/
+        src/
+            api/client.js
+            components/Layout.jsx
+            pages/Dashboard.jsx
+            pages/AgentList.jsx
+            pages/AgentDetail.jsx
+            pages/RunHistory.jsx
+            pages/RunDetail.jsx
+            App.jsx
+            App.css
+    docs/
+        architecture.md
+        api.md
     workspace/
     .env.example
     .gitignore
+    AGENTS.md
     README.md
+    start-all.cmd
+    start-all.ps1
 ```
 
 ## Setup
@@ -118,6 +135,35 @@ MODEL=your-model-name
 WORKSPACE_DIR=./workspace
 ```
 
+### Local model (Ollama) setup
+
+1. [Install Ollama](https://ollama.com) and pull a model with tool-calling support:
+
+   ```bash
+   ollama pull qwen2.5:1.5b
+   ```
+
+2. [Install OmniRoute](https://omniroute.ai) or use the bundled launcher docs, then in
+   its dashboard:
+   - **Providers → Add provider** → pick **Ollama**, set base URL `http://localhost:11434`,
+     no API key.
+   - **API Manager** → create an API key (used as `OMNIROUTE_API_KEY`).
+3. Point `.env` at the local stack:
+
+   ```
+   OMNIROUTE_BASE_URL=http://localhost:20128/v1
+   OMNIROUTE_API_KEY=your-omniroute-key
+   MODEL=ollama/qwen2.5:1.5b
+   ```
+
+4. (Recommended on low-RAM machines) limit Ollama: `setx OLLAMA_CONTEXT_LENGTH 4096`
+   and `setx OLLAMA_KV_CACHE_TYPE q8_0`, then restart Ollama.
+
+### Running Everything
+
+Double-click `start-all.cmd`, or run `start-all.ps1`. It starts
+OmniRoute/backend/frontend, skipping any port that is already listening.
+
 ### Running the Backend
 
 ```bash
@@ -143,6 +189,10 @@ pytest
 - `GET /runs` - List all runs
 - `GET /runs/{run_id}` - Get run details
 - `GET /runs/{run_id}/tools` - Get tool calls for a run
+- `GET /runs/{run_id}/messages` - Get the full message transcript for a run
+- `GET /metrics` - Aggregated metrics across all runs and tool calls
+
+Full reference: [`docs/api.md`](docs/api.md).
 
 ### Example: Run an Agent
 
@@ -169,6 +219,14 @@ Response:
   ]
 }
 ```
+
+## Monitoring
+
+- **Dashboard** shows live backend status plus metric cards (success rate, average
+  latency, tool calls/run, LLM requests/run, failed runs).
+- **Run Details** renders a vertical execution timeline (LLM requests, tool calls,
+  results, final response) and the full message transcript.
+- **Metrics endpoint** (`GET /metrics`) aggregation is described in `docs/api.md`.
 
 ## Agents
 
